@@ -5,20 +5,22 @@ import Link from "next/link";
 import React from "react";
 
 interface Props {
-  open: number;
-  inProgress: number;
-  closed: number;
+  data: {
+    open: number;
+    inProgress: number;
+    closed: number;
+  };
 }
 
-const IssueSummary = ({ open, inProgress, closed }: Props) => {
+const IssueSummary = ({ data }: Props) => {
   const containers: {
     label: string;
     value: number;
     status: Status;
   }[] = [
-    { label: "Open", value: open, status: "OPEN" },
-    { label: "In Progress", value: inProgress, status: "IN_PROGRESS" },
-    { label: "Closed", value: closed, status: "CLOSED" },
+    { label: "Open", value: data.open, status: "OPEN" },
+    { label: "In Progress", value: data.inProgress, status: "IN_PROGRESS" },
+    { label: "Closed", value: data.closed, status: "CLOSED" },
   ];
 
   return (
