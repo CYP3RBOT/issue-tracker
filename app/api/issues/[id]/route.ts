@@ -12,7 +12,7 @@ export async function PATCH(
     params: {
       id: string;
     };
-  }
+  },
 ) {
   const session = await getServerSession(authOptions);
 
@@ -21,7 +21,7 @@ export async function PATCH(
       {},
       {
         status: 401,
-      }
+      },
     );
 
   const body = await request.json();
@@ -30,7 +30,7 @@ export async function PATCH(
   if (!validation.success)
     return NextResponse.json(
       { errors: validation.error.format() },
-      { status: 400 }
+      { status: 400 },
     );
 
   const { assignedToUserId, title, description } = body;
@@ -77,7 +77,7 @@ export async function DELETE(
     params: {
       id: string;
     };
-  }
+  },
 ) {
   const session = await getServerSession(authOptions);
 
@@ -86,7 +86,7 @@ export async function DELETE(
       {},
       {
         status: 401,
-      }
+      },
     );
 
   const issue = await prisma.issue.findUnique({
@@ -100,7 +100,7 @@ export async function DELETE(
       },
       {
         status: 404,
-      }
+      },
     );
   }
 
