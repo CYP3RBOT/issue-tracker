@@ -4,10 +4,10 @@ import { Table } from "@radix-ui/themes";
 import IssueActions from "./IssueActions";
 import { Issue, Status } from "@prisma/client";
 import Link from "next/link";
-import { ArrowUpIcon } from "@radix-ui/react-icons";
+import { ArrowDownIcon, ArrowUpIcon } from "@radix-ui/react-icons";
 
 interface Props {
-  searchParams: Promise<{ status: Status, orderBy: keyof Issue }>;
+  searchParams: Promise<{ status: Status, orderBy: keyof Issue, sort: 'asc' | 'desc' }>;
 }
 
 const IssuesPage = async ({ searchParams: searchParamsPromise }: Props) => {
@@ -16,8 +16,12 @@ const IssuesPage = async ({ searchParams: searchParamsPromise }: Props) => {
   const statuses = Object.values(Status);
   const status = statuses.includes(searchParams.status) ? searchParams.status : undefined;
   
+  const orderBy = searchParams.orderBy ? 
+  { [searchParams.orderBy]: (searchParams.sort === 'asc' || searchParams.sort === 'desc' ? searchParams.sort : 'asc') } : undefined;
+
   const issues = await prisma.issue.findMany({
-    where: {status}
+    where: {status},
+    orderBy
   });
   
   const columns: { 
@@ -39,11 +43,11 @@ const IssuesPage = async ({ searchParams: searchParamsPromise }: Props) => {
             { columns.map((column) => (
               <Table.ColumnHeaderCell key={column.value} className={column.className}>
                 <Link href={{
-                  query: { ...searchParams, sortBy: column.value }
+                  query: { ...searchParams, orderBy: column.value, sort: searchParams.orderBy === column.value && searchParams.sort === 'asc' ? 'desc' : 'asc' }
                 }}>
                   { column.label }
                 </Link>
-                {column.value === searchParams.orderBy && <ArrowUpIcon className='inline' />}
+                {column.value === searchParams.orderBy && (searchParams.sort === 'asc' ? <ArrowUpIcon className='inline' /> : <ArrowDownIcon className='inline'/> ) }
               </Table.ColumnHeaderCell>
             ))}
           </Table.Row>
