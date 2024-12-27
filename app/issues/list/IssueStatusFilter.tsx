@@ -2,7 +2,7 @@
 
 import { Status } from '@prisma/client';
 import { Select } from '@radix-ui/themes'
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React from 'react'
 
 const statuses: {
@@ -17,21 +17,34 @@ const statuses: {
 
 const IssueStatusFilter = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
 
-  return (
-    <Select.Root onValueChange={(status) => {
-        const query = status ? `?status=${status}` : '';
-        router.push(`/issues/list` + query);
-    }}>
-        <Select.Trigger placeholder='Filter by status...'/>
-        <Select.Content>
-            {statuses.map((status, index) => (
-                <Select.Item key={index} value={status.value || " "}>
-                    {status.label}
-                </Select.Item>
-            ))}
-        </Select.Content>
-    </Select.Root>
+    console.log(Object.values(Status));
+    console.log(searchParams.get('status'));
+
+    return (
+        <Select.Root 
+            defaultValue={
+                Object.values(Status).includes(searchParams.get('status') as Status) ? searchParams.get('status') as Status : ' ' 
+            }
+            onValueChange={(status) => {
+                const params = new URLSearchParams();
+                if (status) params.append('status', status);
+                if (searchParams.get('orderBy')) params.append('orderBy', searchParams.get('orderBy')!);
+                if (searchParams.get('sort')) params.append('sort', searchParams.get('sort')!);
+
+                const query = params.size ? '?' + params.toString() : '';
+                router.push(`/issues/list` + query);
+        }}>
+            <Select.Trigger placeholder='Filter by status...'/>
+            <Select.Content>
+                {statuses.map((status, index) => (
+                    <Select.Item key={index} value={status.value || " "}>
+                        {status.label}
+                    </Select.Item>
+                ))}
+            </Select.Content>
+        </Select.Root>
 )
 }
 
